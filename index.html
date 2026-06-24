@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="ht">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Plan PaM — InnoVision Plus</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  
+  :root {
+    --orange: #F57C00;
+    --orange-light: #FF9800;
+    --orange-dark: #E65100;
+    --orange-bg: #FFF3E0;
+    --white: #FFFFFF;
+    --gray-light: #F5F5F5;
+    --gray: #9E9E9E;
+    --gray-dark: #424242;
+    --green: #4CAF50;
+    --red: #F44336;
+    --blue: #1976D2;
+    --text: #212121;
+    --shadow: 0 2px 12px rgba(245,124,0,0.15);
+    --radius: 16px;
+  }
+
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: #F5F5F5;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+  }
+
+  .app {
+    width: 100%;
+    max-width: 430px;
+    min-height: 100vh;
+    background: var(--white);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ===== SCREENS ===== */
+  .screen {
+    display: none;
+    min-height: 100vh;
+    flex-direction: column;
+  }
+  .screen.active { display: flex; }
+
+  /* ===== LOGIN SCREEN ===== */
+  #screen-login {
+    background: linear-gradient(160deg, #FF9800 0%, #F57C00 50%, #E65100 100%);
+    justify-content: center;
+    align-items: center;
+    padding: 40px 24px;
+  }
+
+  .login-logo {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+  .login-logo .logo-circle {
+    width: 90px;
+    height: 90px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+    border: 3px solid rgba(255,255,255,0.4);
+  }
+  .login-logo .logo-circle span { font-size: 40px; }
+  .login-logo h1 {
+    color: white;
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+  }
+  .login-logo p {
+    color: rgba(255,255,255,0.85);
+    font-size: 14px;
+    margin-top: 4px;
+  }
+
+  .login-card {
+    background: white;
+    border-radius: 24px;
+    padding: 32px 24px;
+    width: 100%;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  }
+  .login-card h2 {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+  .login-card p {
+    color: var(--gray);
+    font-size: 14px;
+    margin-bottom: 28px;
+  }
+
+  .input-group {
+    margin-bottom: 20px;
+  }
+  .input-group label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gray-dark);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .input-group input {
+    width: 100%;
+    padding: 16px 20px;
+    border: 2px solid #E0E0E0;
+    border-radius: 14px;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: 4px;
+    transition: border-color 0.2s;
+    outline: none;
+    background: var(--gray-light);
+  }
+  .input-group input:focus {
+    border-color: var(--orange);
+    background: white;
+  }
+  .input-group input::placeholder {
+    letter-spacing: 2px;
+    font-weight: 400;
+    font-size: 16px;
+    color: #BDBDBD;
+  }
+
+  .btn-primary {
+    width: 100%;
+    padding: 18px;
+    background: linear-gradient(135deg, var(--orange-light), var(--orange-dark));
+    color: white;
+    border: none;
+    border-radius: 14px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    box-shadow: 0 6px 20px rgba(245,124,0,0.4);
+    transition: transform 0.1s, box-shadow 0.1s;
+  }
+  .btn-primary:active {
+    transform: scale(0.98);
+    box-shadow: 0 3px 10px rgba(245,124,0,0.3);
+  }
+
+  .login-contact {
+    text-align: center;
+    margin-top: 20px;
+    color: var(--gray);
+    font-size: 13px;
+  }
+  .login-contact a {
+    color: var(--orange);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .error-msg {
+    background: #FFEBEE;
+    color: var(--red);
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 13px;
+    margin-bottom: 16px;
+    display: none;
+    font-weight: 500;
+  }
+
+  /* ===== MAIN SCREENS ===== */
+  .top-bar {
+    background: linear-gradient(135deg, var(--orange-light) 0%, var(--orange-dark) 100%);
+    padding: 48px 20px 80px;
+    position: relative;
+  }
+  .top-bar-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  .user-info { display: flex; align-items: center; gap: 12px; }
+  .user-avatar {
+    width: 48px;
+    height: 48px;
+    background: rgba(255,255,255,0.25);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    border: 2px solid rgba(255,255,255,0.5);
+  }
+  .user-name { color: white; font-weight: 700; font-size: 16px; }
+  .user-code { color: rgba(255,255,255,0.8); font-size: 13px; }
+  .top-icons { display: flex; gap: 10px; }
+  .icon-btn {
+    width: 40px;
+    height: 40px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    cursor: pointer;
+    border: none;
+    color: white;
+  }
+
+  .balance-section { color: white; }
+  .balance-label {
+    font-size: 13px;
+    opacity: 0.85;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+  .balance-label .eye { cursor: pointer; font-size: 16px; }
+  .balance-amount {
+    font-size: 42px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    line-height: 1.1;
+  }
+  .balance-currency { font-size: 18px; font-weight: 500; opacity: 0.85; margin-left: 6px; }
+
+  /* Action buttons card */
+  .actions-card {
+    margin: -40px 16px 0;
+    background: white;
+    border-radius: var(--radius);
+    padding: 20px;
+    box-shadow: var(--shadow);
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    position: relative;
+    z-index: 2;
+  }
+  .action-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 8px;
+    border-radius: 12px;
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    transition: background 0.15s;
+  }
+  .action-btn:active { background: var(--orange-bg); }
+  .action-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+  }
+  .action-icon.orange { background: #FFF3E0; }
+  .action-icon.blue { background: #E3F2FD; }
+  .action-icon.green { background: #E8F5E9; }
+  .action-icon.purple { background: #F3E5F5; }
+  .action-label { font-size: 12px; font-weight: 600; color: var(--gray-dark); }
+
+  /* Content area */
+  .content {
+    flex: 1;
+    padding: 20px 16px 100px;
+    overflow-y: auto;
+  }
+
+  .section-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .section-title a {
+    font-size: 13px;
+    color: var(--orange);
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  /* Plan card */
+  .plan-card {
+    background: linear-gradient(135deg, #FFF3E0, #FFE0B2);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 20px;
+    border-left: 4px solid var(--orange);
+  }
+  .plan-card h3 {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--orange-dark);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .plan-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .plan-item label {
+    font-size: 11px;
+    color: var(--gray);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: block;
+    margin-bottom: 3px;
+  }
+  .plan-item span {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .plan-item span.warning { color: #FF5722; }
+  .plan-item span.ok { color: var(--green); }
+
+  /* Transaction list */
+  .transaction-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 0;
+    border-bottom: 1px solid #F5F5F5;
+  }
+  .trans-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+  .trans-icon.depo { background: #E8F5E9; }
+  .trans-icon.retray { background: #FFEBEE; }
+  .trans-info { flex: 1; }
+  .trans-info .type { font-size: 14px; font-weight: 600; color: var(--text); }
+  .trans-info .date { font-size: 12px; color: var(--gray); margin-top: 2px; }
+  .trans-amount { font-weight: 700; font-size: 15px; }
+  .trans-amount.pos { color: var(--green); }
+  .trans-amount.neg { color: var(--red); }
+
+  /* Bottom nav */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 430px;
+    background: white;
+    border-top: 1px solid #F0F0F0;
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0 20px;
+    z-index: 100;
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+  }
+  .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    padding: 4px 12px;
+    border-radius: 12px;
+    transition: background 0.15s;
+    border: none;
+    background: transparent;
+  }
+  .nav-item .nav-icon { font-size: 22px; }
+  .nav-item .nav-label { font-size: 10px; font-weight: 600; color: var(--gray); }
+  .nav-item.active .nav-label { color: var(--orange); }
+  .nav-item.active .nav-icon { filter: none; }
+
+  /* Simple page header */
+  .page-header {
+    background: linear-gradient(135deg, var(--orange-light), var(--orange-dark));
+    padding: 52px 20px 24px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .back-btn {
+    width: 38px;
+    height: 38px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    cursor: pointer;
+    border: none;
+    color: white;
+    flex-shrink: 0;
+  }
+  .page-header h2 { color: white; font-size: 20px; font-weight: 700; }
+
+  /* Cards */
+  .card {
+    background: white;
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .card h3 {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* Info rows */
+  .info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #F5F5F5;
+  }
+  .info-row:last-child { border-bottom: none; }
+  .info-row label { font-size: 13px; color: var(--gray); }
+  .info-row span { font-size: 14px; font-weight: 600; color: var(--text); }
+  .info-row span.highlight { color: var(--orange); font-size: 16px; }
+  .info-row span.green { color: var(--green); }
+  .info-row span.red { color: var(--red); }
+
+  /* Badge */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .badge.green { background: #E8F5E9; color: var(--green); }
+  .badge.orange { background: #FFF3E0; color: var(--orange); }
+  .badge.red { background: #FFEBEE; color: var(--red); }
+
+  /* Form inputs */
+  .form-group { margin-bottom: 18px; }
+  .form-group label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gray-dark);
+    margin-bottom: 8px;
+  }
+  .form-group input, .form-group select {
+    width: 100%;
+    padding: 14px 16px;
+    border: 2px solid #E0E0E0;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text);
+    outline: none;
+    background: var(--gray-light);
+    transition: border-color 0.2s;
+    -webkit-appearance: none;
+  }
+  .form-group input:focus, .form-group select:focus {
+    border-color: var(--orange);
+    background: white;
+  }
+
+  .result-box {
+    background: var(--orange-bg);
+    border-radius: 14px;
+    padding: 18px;
+    margin: 16px 0;
+    border: 2px solid #FFE0B2;
+  }
+  .result-box .result-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+  }
+  .result-box .result-row label { font-size: 13px; color: var(--gray-dark); }
+  .result-box .result-row span { font-size: 14px; font-weight: 700; color: var(--text); }
+  .result-box .result-row.total span { color: var(--orange-dark); font-size: 18px; }
+
+  /* Condition items */
+  .condition-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid #F5F5F5;
+  }
+  .condition-item:last-child { border-bottom: none; }
+  .condition-check {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .condition-check.ok { background: #E8F5E9; color: var(--green); }
+  .condition-check.fail { background: #FFEBEE; color: var(--red); }
+  .condition-text { font-size: 14px; color: var(--text); font-weight: 500; }
+  .condition-text small { display: block; color: var(--gray); font-size: 12px; margin-top: 2px; }
+
+  /* Kontak */
+  .contact-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 166px 0; /* Note: adjust this if spacing feels weird from original */
+    padding: 16px 0;
+    border-bottom: 1px solid #F5F5F5;
+    cursor: pointer;
+  }
+  .contact-item:last-child { border-bottom: none; }
+  .contact-icon-wrap {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+  .contact-info .contact-label { font-size: 12px; color: var(--gray); }
+  .contact-info .contact-value { font-size: 15px; font-weight: 700; color: var(--text); margin-top: 2px; }
+
+  /* Demann prè success */
+  .success-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 24px;
+    text-align: center;
+  }
+  .success-icon {
+    width: 80px;
+    height: 80px;
+    background: #E8F5E9;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+    margin-bottom: 24px;
+  }
+  .success-screen h2 { font-size: 22px; font-weight: 700; color: var(--text); margin-bottom: 12px; }
+  .success-screen p { color: var(--gray); font-size: 15px; line-height: 1.6; }
+  .ref-number {
+    background: var(--orange-bg);
+    border-radius: 12px;
+    padding: 14px 24px;
+    margin: 20px 0;
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--orange-dark);
+    letter-spacing: 2px;
+  }
+
+  /* Lang switcher */
+  .lang-bar {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 12px;
+    margin-top: 20px;
+  }
+  .lang-btn {
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: none;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 700;
+    background: rgba(255,255,255,0.2);
+    color: white;
+    transition: background 0.2s;
+  }
+  .lang-btn.active { background: white; color: var(--orange); }
+
+  /* Orè */
+  .horaire-box {
+    background: var(--gray-light);
+    border-radius: 12px;
+    padding: 14px;
+    margin-top: 8px;
+  }
+  .horaire-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    font-size: 13px;
+  }
+  .horaire-row .day { color: var(--gray-dark); font-weight: 500; }
+  .horaire-row .time { color: var(--orange); font-weight: 700; }
+
+  /* Disable scroll when not needed */
+  .no-scroll { overflow: hidden; }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 90px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #323232;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 24px;
+    font-size: 14px;
+    font-weight: 500;
+    z-index: 999;
+    opacity: 0;
+    transition: opacity 0.3s;
+    white-space: nowrap;
+  }
+  .toast.show { opacity: 1; }
+
+  /* Dekesman warning */
+  .dekesman-warning {
+    background: #FFF8E1;
+    border: 1px solid #FFE082;
+    border-radius: 12px;
+    padding: 14px;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    margin-bottom: 16px;
+  }
+  .dekesman-warning span { font-size: 20px; }
+  .dekesman-warning p { font-size: 13px; color: #5D4037; line-height: 1.5; }
+
+  .divider {
+    border: none;
+    border-top: 1px solid #F5F5F5;
+    margin: 4px 0;
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="toast" id="toast"></div>
+
+  <div class="screen active" id="screen-login">
+    <div class="login-logo">
+      <div class="logo-circle"><span>🏦</span></div>
+      <h1>InnoVision Plus</h1>
+      <p>Plan PaM — Portal Kliyan</p>
+      <div class="lang-bar">
+        <button class="lang-btn active" onclick="setLang('ht')">🇭🇹 KR</button>
+        <button class="lang-btn" onclick="setLang('fr')">🇫🇷 FR</button>
+        <button class="lang-btn" onclick="setLang('en')">🇺🇸 EN</button>
+      </div>
+    </div>
+
+    <div class="login-card">
+      <h2 id="login-title">Byenveni! 👋</h2>
+      <p id="login-subtitle">Antre nimewo kont ou pou konekte</p>
+
+      <div id="login-error" class="error-msg">❌ Kòd sa a pa egziste. Kontakte InnoVision Plus.</div>
+
+      <div class="input-group">
+        <label id="login-label">NIMEWO KÒD</label>
+        <input type="number" id="login-code" placeholder="ex: 1001" inputmode="numeric" min="1000">
+      </div>
+
+      <button class="btn-primary" id="login-btn" onclick="doLogin()">KONEKTE</button>
+
+      <div class="login-contact">
+        <p id="login-contact-text">Ou pa gen kont? Kontakte nou:</p>
+        <a href="tel:+50932451898">📞 +509 3245-1898</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="screen" id="screen-home">
+    <div class="top-bar">
+      <div class="top-bar-row">
+        <div class="user-info">
+          <div class="user-avatar">👤</div>
+          <div>
+            <div class="user-name" id="home-name">Jean Pierre</div>
+            <div class="user-code" id="home-code">Kòd #1001</div>
+          </div>
+        </div>
+        <div class="top-icons">
+          <button class="icon-btn" onclick="showToast('🔔 Pa gen notifikasyon')">🔔</button>
+          <button class="icon-btn" onclick="doLogout()">🚪</button>
+        </div>
+      </div>
+      <div class="balance-section">
+        <div class="balance-label">
+          Balans Total <span class="eye" onclick="toggleBalance()">👁</span>
+        </div>
+        <div class="balance-amount">
+          <span id="home-balance">45,000</span><span class="balance-currency">GDES</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="actions-card">
+      <button class="action-btn" onclick="goTo('epay')">
+        <div class="action-icon orange">💰</div>
+        <span class="action-label" id="nav-epay-lbl">Epay</span>
+      </button>
+      <button class="action-btn" onclick="goTo('pre')">
+        <div class="action-icon blue">🏦</div>
+        <span class="action-label" id="nav-pre-lbl">Prè</span>
+      </button>
+      <button class="action-btn" onclick="goTo('dekesman')">
+        <div class="action-icon green">🏧</div>
+        <span class="action-label" id="nav-dek-lbl">Dekesman</span>
+      </button>
+    </div>
+
+    <div class="content">
+      <div class="plan-card">
+        <h3>📅 <span id="plan-title">Plan PaM Ou</span></h3>
+        <div class="plan-grid">
+          <div class="plan-item">
+            <label id="lbl-komanse">Kòmanse</label>
+            <span id="plan-start">01 Jan 2026</span>
+          </div>
+          <div class="plan-item">
+            <label id="lbl-dekesman">Dekesman</label>
+            <span id="plan-end" class="warning">30 Jen 2026</span>
+          </div>
+          <div class="plan-item">
+            <label id="lbl-dire">Dire</label>
+            <span id="plan-dur">180 jou</span>
+          </div>
+          <div class="plan-item">
+ 
